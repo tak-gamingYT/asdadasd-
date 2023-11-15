@@ -1,124 +1,163 @@
 <?php
-require 'config/config.php';
-$dataName = ($zone == 'EU') ? (($lang == 'FR') ? "Octets" : "Bytes") : 'Bits';
-$requestLang = ($lang == 'FR') ? 'Requetes' : 'Requests';
-$perSecondLang = ($lang == 'FR') ? 'par seconde' : 'per second';
-?>
-<link rel="icon" href="/data/stupid.png" type="image/vnd.microsoft.icon" />
-<title><?php echo $sitename; ?></title>
+$IPmaxNumber = 10;
+$clientIP = $_SERVER['HTTP_CLIENT_IP'] ? $_SERVER['HTTP_CLIENT_IP'] : 
+            ($_SERVER['REMOTE_ADDR'] ? $_SERVER['REMOTE_ADDR'] : 
+            ($_SERVER['HTTP_X_FORWARDED_FOR'] ? $_SERVER['HTTP_X_FORWARDED_FOR'] : 
+            $_SERVER['REMOTE_ADDR']));
+$IPs = file_get_contents('loggedIP.txt');
+if (strstr($IPs, $clientIP)) {
+    $ips = explode(',', $IPs);
+    if (count($ips) > $IPmaxNumber) {
+        header("HTTP/1.0 403 Forbidden");
+        exit;
+    }
+    array_push($ips, $clientIP);
+    file_put_contents('loggedIP.txt', implode(",", $ips));
+}
 
+//require $_SERVER['DOCUMENT_ROOT']."/r00t/anti-ddos-lite.php";
+//require($_SERVER['DOCUMENT_ROOT'].'/waf-safeness/start-waf.php');
+?>
+<!DOCTYPE html>
 <html>
 <head>
-    <?php error_log(" \r\n", 3, 'data/layer7-logs'); ?>
+  <meta charset="UTF-8">
+  <title>PHẦN MỀM CHẶN CÁC TRANG WEB XẤU UB2</title>
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      animation: backgroundAnimation 10s infinite;
+    }
+    @keyframes backgroundAnimation {
+      0% {
+        background-image: url("img/khkt.png");
+        background-position-y: 0%;
+      }
+      50% {
+        background-image: url("img/khkt1.png");
+        background-position-y: 0;
+      }
+      75% {
+        background-image: url("img/khkt.png");
+        background-position-y: 0%;
+      }
+      100% {
+        background-image: url("img/khkt.png");
+        background-position-y: 0%;
+      }
+    }
+
+    h1 {
+      color: white;
+      font-size: 48px;
+      text-align: center;
+      margin-top: 200px;
+      animation: fadeIn 2s ease-in-out;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    p {
+      font-size: 24px;
+      text-align: center;
+      margin-top: -20px;
+      animation: fadeIn 2s ease-in-out;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    button {
+      background-color: #FF4C4C;
+      color: white;
+      font-size: 24px;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-top: 20px;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+      opacity: 0;
+      animation: fadeInButton 2s ease-in-out forwards;
+    }
+
+    button:hover {
+      background-color: #FF0000;
+    }
+
+    .credit {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      font-size: 12px;
+      color: white;
+    }
+
+    #creator {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 18px;
+      color: white;
+    }
+#creator a {
+      color: white;
+      text-decoration: underline;
+    }
+
+    #dung {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 18px;
+      color: white;
+    }
+
+    #dung a {
+      color: white;
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInButton {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 <body>
-<div id="layer7"></div>
-<br/>
-<div id="layer4"></div>
-<br/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.2.2/highcharts.js"
-        integrity="sha512-PpL09bLaSaj5IzGNx6hsnjiIeLm9bL7Q9BB4pkhEvQSbmI0og5Sr/s7Ns/Ax4/jDrggGLdHfa9IbsvpnmoZYFA=="
-        crossorigin="anonymous"></script>
-<script
-        src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.2.2/modules/exporting.min.js"
-        integrity="sha512-DuFO4JhOrZK4Zz+4K0nXseP0K/daLNCrbGjSkRzK+Zibkblwqc0BYBQ1sTN7mC4Kg6vNqr8eMZwLgTcnKXF8mg=="
-        crossorigin="anonymous"
-></script>
+<h1>Phần Mềm Chặn Các Trang Web Xấu: UB<sup>2</sup></h1>
+<p>Đây Là Dự Án Để Chặn/Bỏ Chặn Website Xấu.<br>Làm Bằng 100% Code CMD(Code Mặc Định Trong Console)<br>Dự Án Này Được Dùng Trong Giáo Dục.<br>Hiện Tại Chỉ Hoạt Động Trên Windown.</p>
+<button onclick="downloadFile()">Download</button>
+<div class="credit">Copyright &copy; TPU DaNang KHKT 2023</div>
+<div id="creator">
+Coder: <a href="https://www.facebook.com/Tak.Nek.XD">A.Kiệt</a>
+</div>
 
-<script id="source" language="javascript" type="text/javascript">
-    $(document).ready(function () {
-        Highcharts.createElement(
-            "link",
-            {
-                href: "https://fonts.googleapis.com/css?family=Unica+One",
-                rel: "stylesheet",
-                type: "text/css",
-            },
-            null,
-            document.getElementsByTagName("head")[0]
-        );
+<div id="dung">
+Tester + Information: <a href="https://www.facebook.com/huynhngocthuydungdng">T.Dung</a>
+</div>
 
-        let layer7 = new Highcharts.Chart({
-            chart: {
-                renderTo: "layer7",
-                defaultSeriesType: "spline",
-                events: {
-                    load: requestData(0),
-                },
-            },
-            title: {
-                text: "<?php echo $Layer7Title;?>",
-            },
-            xAxis: {
-                type: "datetime",
-                tickPixelInterval: 150,
-                maxZoom: 20 * 1000,
-            },
-            yAxis: {
-                minPadding: 0.2,
-                maxPadding: 0.2,
-                title: {
-                    text: "<?php echo $requestLang;?> <?php echo $perSecondLang;?>",
-                    margin: 80,
-                },
-            },
-            series: [
-                {
-                    name: "<?php echo $requestLang;?>/s",
-                    data: [],
-                },
-            ],
-        });
-
-        let layer4 = new Highcharts.Chart({
-            chart: {
-                renderTo: "layer4",
-                defaultSeriesType: "spline",
-                events: {
-                    load: requestData(1),
-                },
-            },
-            title: {
-                text: "<?php echo $Layer4Title;?>",
-            },
-            xAxis: {
-                type: "datetime",
-                tickPixelInterval: 150,
-                maxZoom: 20 * 1000,
-            },
-            yAxis: {
-                minPadding: 0.2,
-                maxPadding: 0.2,
-                title: {
-                    text: "<?php echo $dataName;?> <?php echo $perSecondLang;?>",
-                    margin: 80,
-                },
-            },
-            series: [
-                {
-                    name: "<?php echo $dataName;?>/s",
-                    data: [],
-                },
-            ],
-        });
-
-        function requestData(type) {
-            $.ajax({
-                url: "data/" + (!type ? "layer7" : "layer4") + ".php",
-                success: function (point) {
-                    var series = (!type ? layer7 : layer4).series[0],
-                        shift = series.data.length > 20;
-                    series.addPoint(point, true, shift);
-                    setTimeout(() => requestData(type), 1000);
-                },
-                cache: false,
-            });
-        }
-    });
-</script>
+<script>
+    function downloadFile() {
+      window.location.href = "https://takisnoob.ddns.net/khkt/run.bat";
+    }
+  </script>
 </body>
 </html>
-
